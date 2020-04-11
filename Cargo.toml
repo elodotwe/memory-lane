@@ -1,0 +1,12 @@
+[package]
+name = "memory-lane"
+version = "0.1.0"
+authors = ["Jacob Rau <jarau@mtu.edu>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+rocket = "0.4.4"
+walkdir = "2"
+image = "0.23.3"
