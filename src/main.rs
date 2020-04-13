@@ -3,10 +3,14 @@
 #[macro_use] extern crate rocket;
 
 use rocket::State;
+use rocket::response::content;
 
 #[get("/")]
-fn index(pics: State<PictureIndex>) -> String {
-    format!("Hello world! {} pics present", pics.pics.len())
+fn index(pics: State<PictureIndex>) -> content::Html<String> {
+    //format!("Hello world! {} pics present", pics.pics.len())
+    
+    content::Html(format!("<html><body>{}</body></html>",
+    pics.pics.iter().map(|p| String::from(p.to_str().unwrap())).collect::<Vec<String>>().join("<br>")))
 }
 
 struct PictureIndex {
@@ -24,12 +28,13 @@ use walkdir::WalkDir;
 
 fn init_pictures() -> Vec<std::path::PathBuf> {
     let mut result: Vec<std::path::PathBuf> = Vec::new();
-    for entry in WalkDir::new("/home/jacob/Pictures") {
+    let parent = std::path::Path::new("/home/jacob/Pictures");
+    for entry in WalkDir::new(parent) {
         let entry = entry.unwrap();
         let path = entry.path();
         println!("{}", path.display());
         match image::image_dimensions(path) {
-            Ok(_) => result.push(path.to_path_buf()),
+            Ok(_) => result.push(path.strip_prefix(parent).unwrap().to_path_buf()),
             Err(e) => println!("Error parsing this one, {:?}", e)
         }
     }
