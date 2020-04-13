@@ -2,16 +2,22 @@
 
 #[macro_use] extern crate rocket;
 
+use rocket::State;
+
 #[get("/")]
-fn index() -> &'static str {
-    "Hello world!"
+fn index(pics: State<PictureIndex>) -> String {
+    format!("Hello world! {} pics present", pics.pics.len())
 }
 
-
+struct PictureIndex {
+    pics: Vec<std::path::PathBuf>
+}
 
 fn main() {
-    init_pictures();
-    rocket::ignite().mount("/", routes![index]).launch();
+    rocket::ignite()
+        .mount("/", routes![index])
+        .manage(PictureIndex { pics: init_pictures() })
+        .launch();
 }
 
 use walkdir::WalkDir;
