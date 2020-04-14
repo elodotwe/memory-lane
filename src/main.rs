@@ -13,6 +13,15 @@ fn index(pics: State<PictureIndex>) -> content::Html<String> {
     pics.pics.iter().map(|p| String::from(p.to_str().unwrap())).collect::<Vec<String>>().join("<br>")))
 }
 
+use rocket::http::ContentType;
+use std::path::PathBuf;
+
+#[get("/image/<path..>")]
+fn picture(path: PathBuf, pics: State<PictureIndex>) -> content::Content<&str> {
+    println!("request for {:?}", path);
+    content::Content(ContentType::HTML, "image goes here lawl")
+}
+
 struct PictureIndex {
     pics: Vec<std::path::PathBuf>
 }
@@ -20,6 +29,7 @@ struct PictureIndex {
 fn main() {
     rocket::ignite()
         .mount("/", routes![index])
+        .mount("/", routes![picture])
         .manage(PictureIndex { pics: init_pictures() })
         .launch();
 }
